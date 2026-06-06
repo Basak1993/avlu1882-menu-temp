@@ -2,97 +2,125 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Konak 1882 — Menü</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { height: 100%; overflow: hidden; }
   body {
-    background: #F5EFE0;
-    color: #2C2416;
+    background: #131008;
+    color: #F5EFE0;
     font-family: 'Cormorant Garamond', 'Garamond', serif;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+
+  /* Background video */
+  .bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(19,16,8,0.55) 0%, rgba(19,16,8,0.72) 100%);
+    z-index: 1;
+  }
+
+  /* Foreground */
+  .wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 32px 20px;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap {
-    width: 100%;
-    max-width: 460px;
-    text-align: center;
+    padding: 32px 24px;
   }
   .frame {
-    border: 0.6px solid rgba(44, 36, 22, 0.45);
-    padding: 56px 32px 48px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border: 0.6px solid rgba(245, 239, 224, 0.45);
+    padding: 52px 28px 44px;
     position: relative;
+    background: rgba(19, 16, 8, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .frame::before {
     content: '';
     position: absolute;
     inset: 8px;
-    border: 0.4px solid rgba(44, 36, 22, 0.25);
+    border: 0.4px solid rgba(245, 239, 224, 0.25);
     pointer-events: none;
   }
   .line {
     height: 0.6px;
-    background: rgba(44, 36, 22, 0.5);
+    background: rgba(245, 239, 224, 0.5);
     width: 60%;
     margin: 0 auto;
   }
   h1 {
-    font-size: 44px;
+    font-size: 40px;
     font-weight: 300;
     letter-spacing: 14px;
     padding-left: 14px;
-    margin: 28px 0 6px;
+    margin: 26px 0 6px;
+    color: #F5EFE0;
   }
   .tagline {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 300;
     letter-spacing: 6px;
-    color: rgba(44, 36, 22, 0.7);
-    margin-bottom: 28px;
+    color: rgba(245, 239, 224, 0.75);
+    margin-bottom: 26px;
   }
   .label {
     font-size: 12px;
     font-style: italic;
     letter-spacing: 3px;
-    color: rgba(44, 36, 22, 0.65);
-    margin: 36px 0 24px;
+    color: rgba(245, 239, 224, 0.7);
+    margin: 32px 0 22px;
   }
   .menus {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin: 24px 0 12px;
+    gap: 14px;
+    margin: 22px 0 8px;
   }
   .menu-btn {
     display: block;
     text-decoration: none;
-    color: #2C2416;
+    color: #F5EFE0;
     background: transparent;
-    border: 1px solid rgba(44, 36, 22, 0.55);
-    padding: 22px 24px;
+    border: 1px solid rgba(245, 239, 224, 0.55);
+    padding: 20px 22px;
     transition: all 0.25s ease;
     position: relative;
   }
   .menu-btn:hover, .menu-btn:active {
-    background: #2C2416;
-    color: #F5EFE0;
-    border-color: #2C2416;
+    background: rgba(245, 239, 224, 0.92);
+    color: #2C2416;
+    border-color: rgba(245, 239, 224, 0.92);
   }
   .menu-btn .title {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 300;
     letter-spacing: 10px;
     padding-left: 10px;
     display: block;
   }
   .menu-btn .sub {
-    font-size: 10px;
+    font-size: 9.5px;
     letter-spacing: 4px;
     text-transform: uppercase;
     opacity: 0.7;
@@ -102,13 +130,18 @@
   .footer {
     font-size: 10px;
     letter-spacing: 3px;
-    color: rgba(44, 36, 22, 0.5);
-    margin-top: 32px;
+    color: rgba(245, 239, 224, 0.55);
+    margin-top: 26px;
     text-transform: uppercase;
   }
 </style>
 </head>
 <body>
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" poster="">
+    <source src="./intro.mp4" type="video/mp4">
+  </video>
+  <div class="bg-overlay"></div>
+
   <main class="wrap">
     <div class="frame">
       <div class="line"></div>
