@@ -28,15 +28,15 @@
     height: 100dvh;
     background: #F2EBDD;
     z-index: 2;
-    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1),
-                opacity 1.0s ease 0.2s;
+    transition: transform 1.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 1.0s ease 0.3s;
     overflow: hidden;
-    transform: translateY(0);
+    transform: scale(1);
   }
   .video-stage.hidden {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-100%);
+    transform: scale(1.25);
   }
   .video-stage video {
     width: 100%;
