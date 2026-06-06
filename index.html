@@ -136,10 +136,15 @@
     padding: 18px 22px;
     transition: all 0.25s ease;
   }
-  .menu-btn:hover, .menu-btn:active {
+  .menu-btn:not(.disabled):hover, .menu-btn:not(.disabled):active {
     background: #2C2416;
     color: #F2EBDD;
     border-color: #2C2416;
+  }
+  .menu-btn.disabled {
+    cursor: default;
+    opacity: 0.55;
+    border-style: dashed;
   }
   .menu-btn .title {
     font-size: 22px;
@@ -183,7 +188,6 @@
       <img src="./konak-muhur.png" alt="Konak 1882" class="logo">
       <div class="line"></div>
       <div class="welcome">Hoşgeldiniz</div>
-      <div class="welcome-sub">Konak 1882</div>
       <div class="line"></div>
 
       <div class="label">menü seçiniz</div>
@@ -193,10 +197,10 @@
           <span class="title">KONAK 1882</span>
           <span class="sub">Resto &nbsp;·&nbsp; Bar</span>
         </a>
-        <a href="./avlu.html" class="menu-btn">
+        <div class="menu-btn disabled" aria-disabled="true">
           <span class="title">AVLU 1882</span>
           <span class="sub">Yakında</span>
-        </a>
+        </div>
       </div>
 
       <div class="footer">Cunda &nbsp;·&nbsp; Ayvalık</div>
