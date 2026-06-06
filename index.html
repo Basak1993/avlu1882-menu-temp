@@ -17,104 +17,57 @@
     height: 100vh;
   }
 
-  .stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-
-  /* ====== Splash (tap to start) ====== */
-  .splash {
-    z-index: 3;
-    cursor: pointer;
-    text-align: center;
-    transition: opacity 0.6s ease;
-    padding: 32px;
-  }
-  .splash.hidden { opacity: 0; pointer-events: none; }
-  .splash .line { height: 0.6px; background: rgba(245, 239, 224, 0.5); width: 180px; margin: 0 auto; }
-  .splash h1 {
-    font-size: 50px;
-    font-weight: 300;
-    letter-spacing: 16px;
-    padding-left: 16px;
-    margin: 30px 0 8px;
-  }
-  .splash .tag {
-    font-size: 11px;
-    letter-spacing: 6px;
-    color: rgba(245, 239, 224, 0.75);
-    margin-bottom: 30px;
-  }
-  .splash .play-ring {
-    width: 64px; height: 64px;
-    border: 0.8px solid rgba(245, 239, 224, 0.55);
-    border-radius: 50%;
-    display: inline-flex;
+  /* ====== Video stage (full screen) ====== */
+  .video-stage {
+    position: fixed;
+    inset: 0;
+    background: #131008;
+    z-index: 2;
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin: 24px auto 16px;
-    transition: all 0.25s;
+    transition: opacity 0.5s ease;
   }
-  .splash:active .play-ring, .splash:hover .play-ring {
-    background: rgba(245, 239, 224, 0.92);
-    border-color: rgba(245, 239, 224, 0.92);
-  }
-  .splash:active .play-ring .tri, .splash:hover .play-ring .tri { border-left-color: #2C2416; }
-  .play-ring .tri {
-    width: 0; height: 0;
-    border-left: 14px solid #F5EFE0;
-    border-top: 9px solid transparent;
-    border-bottom: 9px solid transparent;
-    margin-left: 4px;
-    transition: border-left-color 0.25s;
-  }
-  .splash .hint {
-    font-size: 11px;
-    letter-spacing: 4px;
-    font-style: italic;
-    color: rgba(245, 239, 224, 0.6);
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
+  .video-stage.hidden { opacity: 0; pointer-events: none; }
 
-  /* ====== Video stage ====== */
-  .video-stage {
-    z-index: 2;
-    background: #131008;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-  }
-  .video-stage.active { opacity: 1; pointer-events: auto; }
   .video-stage video {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
-  .skip-btn {
+
+  /* subtle unmute hint */
+  .sound-toggle {
     position: absolute;
-    bottom: 24px;
-    right: 24px;
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: rgba(245, 239, 224, 0.55);
-    background: rgba(19, 16, 8, 0.5);
-    border: 0.6px solid rgba(245, 239, 224, 0.35);
-    padding: 8px 14px;
-    text-transform: uppercase;
+    top: max(16px, env(safe-area-inset-top, 16px));
+    right: max(16px, env(safe-area-inset-right, 16px));
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(19, 16, 8, 0.55);
+    border: 0.6px solid rgba(245, 239, 224, 0.5);
+    display: flex; align-items: center; justify-content: center;
     cursor: pointer;
+    z-index: 3;
     transition: all 0.2s;
-    font-family: inherit;
   }
-  .skip-btn:hover { color: #F5EFE0; border-color: rgba(245, 239, 224, 0.7); }
+  .sound-toggle:hover { background: rgba(19, 16, 8, 0.85); }
+  .sound-toggle svg { width: 20px; height: 20px; fill: #F5EFE0; }
 
   /* ====== Menu stage ====== */
   .menu-stage {
+    position: fixed;
+    inset: 0;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.6s ease;
-    padding: 32px 24px;
   }
-  .menu-stage.active { opacity: 1; pointer-events: auto; }
+  .menu-stage.active { opacity: 1; pointer-events: auto; z-index: 4; }
 
   .frame {
     width: 100%;
@@ -199,28 +152,19 @@
 </style>
 </head>
 <body>
-  <!-- ============ SPLASH ============ -->
-  <div class="stage splash" id="splash">
-    <div>
-      <div class="line"></div>
-      <h1>KONAK</h1>
-      <div class="tag">1882 &nbsp;·&nbsp; CUNDA, AYVALIK</div>
-      <div class="line"></div>
-      <div class="play-ring"><div class="tri"></div></div>
-      <div class="hint">dokunarak başlat</div>
+  <!-- ============ VIDEO (autoplay fullscreen) ============ -->
+  <div class="video-stage" id="videoStage">
+    <video id="introVid" autoplay muted playsinline preload="auto">
+      <source src="./intro.mp4" type="video/mp4">
+    </video>
+    <div class="sound-toggle" id="soundToggle" title="sesi aç">
+      <svg viewBox="0 0 24 24" id="iconMuted"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.17v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+      <svg viewBox="0 0 24 24" id="iconUnmuted" style="display:none"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
     </div>
   </div>
 
-  <!-- ============ VIDEO ============ -->
-  <div class="stage video-stage" id="videoStage">
-    <video id="introVid" playsinline preload="auto">
-      <source src="./intro.mp4" type="video/mp4">
-    </video>
-    <button class="skip-btn" id="skipBtn">geç →</button>
-  </div>
-
   <!-- ============ MENU ============ -->
-  <div class="stage menu-stage" id="menuStage">
+  <div class="menu-stage" id="menuStage">
     <div class="frame">
       <div class="line"></div>
       <h1>KONAK</h1>
@@ -245,36 +189,40 @@
   </div>
 
   <script>
-    const splash = document.getElementById('splash');
     const videoStage = document.getElementById('videoStage');
     const menuStage = document.getElementById('menuStage');
     const video = document.getElementById('introVid');
-    const skipBtn = document.getElementById('skipBtn');
+    const soundToggle = document.getElementById('soundToggle');
+    const iconMuted = document.getElementById('iconMuted');
+    const iconUnmuted = document.getElementById('iconUnmuted');
 
     function showMenu() {
-      videoStage.classList.remove('active');
+      videoStage.classList.add('hidden');
       menuStage.classList.add('active');
       try { video.pause(); } catch (e) {}
     }
 
-    function startVideo() {
-      splash.classList.add('hidden');
-      videoStage.classList.add('active');
-      video.muted = false;
-      video.currentTime = 0;
-      const p = video.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {
-          // If unmuted play fails, fall back to muted
-          video.muted = true;
-          video.play().catch(() => showMenu());
-        });
-      }
-    }
-
-    splash.addEventListener('click', startVideo);
     video.addEventListener('ended', showMenu);
-    skipBtn.addEventListener('click', showMenu);
+
+    soundToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      video.muted = !video.muted;
+      if (!video.muted) {
+        iconMuted.style.display = 'none';
+        iconUnmuted.style.display = '';
+        // ensure playback continues
+        video.play().catch(() => {});
+      } else {
+        iconMuted.style.display = '';
+        iconUnmuted.style.display = 'none';
+      }
+    });
+
+    // Fallback: if autoplay blocked, force play on first interaction
+    video.play().catch(() => {
+      const resume = () => { video.play().catch(() => {}); document.removeEventListener('click', resume); };
+      document.addEventListener('click', resume, { once: true });
+    });
   </script>
 </body>
 </html>
