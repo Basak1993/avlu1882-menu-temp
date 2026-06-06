@@ -7,44 +7,115 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  html, body { height: 100%; overflow: hidden; background: #131008; }
   body {
-    background: #131008;
     color: #F5EFE0;
     font-family: 'Cormorant Garamond', 'Garamond', serif;
-    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     position: relative;
-  }
-
-  /* Background video */
-  .bg-video {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    pointer-events: none;
-  }
-  .bg-overlay {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(19,16,8,0.55) 0%, rgba(19,16,8,0.72) 100%);
-    z-index: 1;
-  }
-
-  /* Foreground */
-  .wrap {
-    position: relative;
-    z-index: 2;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
-    display: flex;
+  }
+
+  .stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* ====== Splash (tap to start) ====== */
+  .splash {
+    z-index: 3;
+    cursor: pointer;
+    text-align: center;
+    transition: opacity 0.6s ease;
+    padding: 32px;
+  }
+  .splash.hidden { opacity: 0; pointer-events: none; }
+  .splash .line { height: 0.6px; background: rgba(245, 239, 224, 0.5); width: 180px; margin: 0 auto; }
+  .splash h1 {
+    font-size: 50px;
+    font-weight: 300;
+    letter-spacing: 16px;
+    padding-left: 16px;
+    margin: 30px 0 8px;
+  }
+  .splash .tag {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: rgba(245, 239, 224, 0.75);
+    margin-bottom: 30px;
+  }
+  .splash .play-ring {
+    width: 64px; height: 64px;
+    border: 0.8px solid rgba(245, 239, 224, 0.55);
+    border-radius: 50%;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 24px auto 16px;
+    transition: all 0.25s;
+  }
+  .splash:active .play-ring, .splash:hover .play-ring {
+    background: rgba(245, 239, 224, 0.92);
+    border-color: rgba(245, 239, 224, 0.92);
+  }
+  .splash:active .play-ring .tri, .splash:hover .play-ring .tri { border-left-color: #2C2416; }
+  .play-ring .tri {
+    width: 0; height: 0;
+    border-left: 14px solid #F5EFE0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    margin-left: 4px;
+    transition: border-left-color 0.25s;
+  }
+  .splash .hint {
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-style: italic;
+    color: rgba(245, 239, 224, 0.6);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* ====== Video stage ====== */
+  .video-stage {
+    z-index: 2;
+    background: #131008;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .video-stage.active { opacity: 1; pointer-events: auto; }
+  .video-stage video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .skip-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(245, 239, 224, 0.55);
+    background: rgba(19, 16, 8, 0.5);
+    border: 0.6px solid rgba(245, 239, 224, 0.35);
+    padding: 8px 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .skip-btn:hover { color: #F5EFE0; border-color: rgba(245, 239, 224, 0.7); }
+
+  /* ====== Menu stage ====== */
+  .menu-stage {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
     padding: 32px 24px;
   }
+  .menu-stage.active { opacity: 1; pointer-events: auto; }
+
   .frame {
     width: 100%;
     max-width: 420px;
@@ -52,9 +123,6 @@
     border: 0.6px solid rgba(245, 239, 224, 0.45);
     padding: 52px 28px 44px;
     position: relative;
-    background: rgba(19, 16, 8, 0.35);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
   }
   .frame::before {
     content: '';
@@ -69,7 +137,7 @@
     width: 60%;
     margin: 0 auto;
   }
-  h1 {
+  .menu-stage h1 {
     font-size: 40px;
     font-weight: 300;
     letter-spacing: 14px;
@@ -77,7 +145,7 @@
     margin: 26px 0 6px;
     color: #F5EFE0;
   }
-  .tagline {
+  .menu-stage .tagline {
     font-size: 10.5px;
     font-weight: 300;
     letter-spacing: 6px;
@@ -91,12 +159,7 @@
     color: rgba(245, 239, 224, 0.7);
     margin: 32px 0 22px;
   }
-  .menus {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin: 22px 0 8px;
-  }
+  .menus { display: flex; flex-direction: column; gap: 14px; margin: 22px 0 8px; }
   .menu-btn {
     display: block;
     text-decoration: none;
@@ -105,7 +168,6 @@
     border: 1px solid rgba(245, 239, 224, 0.55);
     padding: 20px 22px;
     transition: all 0.25s ease;
-    position: relative;
   }
   .menu-btn:hover, .menu-btn:active {
     background: rgba(245, 239, 224, 0.92);
@@ -137,12 +199,28 @@
 </style>
 </head>
 <body>
-  <video class="bg-video" autoplay muted loop playsinline preload="auto" poster="">
-    <source src="./intro.mp4" type="video/mp4">
-  </video>
-  <div class="bg-overlay"></div>
+  <!-- ============ SPLASH ============ -->
+  <div class="stage splash" id="splash">
+    <div>
+      <div class="line"></div>
+      <h1>KONAK</h1>
+      <div class="tag">1882 &nbsp;·&nbsp; CUNDA, AYVALIK</div>
+      <div class="line"></div>
+      <div class="play-ring"><div class="tri"></div></div>
+      <div class="hint">dokunarak başlat</div>
+    </div>
+  </div>
 
-  <main class="wrap">
+  <!-- ============ VIDEO ============ -->
+  <div class="stage video-stage" id="videoStage">
+    <video id="introVid" playsinline preload="auto">
+      <source src="./intro.mp4" type="video/mp4">
+    </video>
+    <button class="skip-btn" id="skipBtn">geç →</button>
+  </div>
+
+  <!-- ============ MENU ============ -->
+  <div class="stage menu-stage" id="menuStage">
     <div class="frame">
       <div class="line"></div>
       <h1>KONAK</h1>
@@ -164,6 +242,39 @@
 
       <div class="footer">Cunda &nbsp;·&nbsp; Ayvalık</div>
     </div>
-  </main>
+  </div>
+
+  <script>
+    const splash = document.getElementById('splash');
+    const videoStage = document.getElementById('videoStage');
+    const menuStage = document.getElementById('menuStage');
+    const video = document.getElementById('introVid');
+    const skipBtn = document.getElementById('skipBtn');
+
+    function showMenu() {
+      videoStage.classList.remove('active');
+      menuStage.classList.add('active');
+      try { video.pause(); } catch (e) {}
+    }
+
+    function startVideo() {
+      splash.classList.add('hidden');
+      videoStage.classList.add('active');
+      video.muted = false;
+      video.currentTime = 0;
+      const p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          // If unmuted play fails, fall back to muted
+          video.muted = true;
+          video.play().catch(() => showMenu());
+        });
+      }
+    }
+
+    splash.addEventListener('click', startVideo);
+    video.addEventListener('ended', showMenu);
+    skipBtn.addEventListener('click', showMenu);
+  </script>
 </body>
 </html>
