@@ -101,11 +101,10 @@
 
   .logo {
     display: block;
-    width: 110%;
-    max-width: none;
+    width: 100%;
+    max-width: 460px;
     height: auto;
-    margin: 8px -5% 22px;
-    mix-blend-mode: multiply;
+    margin: 8px auto 22px;
   }
 
   .line {
@@ -232,12 +231,12 @@
     function showMenu() {
       videoStage.classList.add('hidden');
       menuStage.classList.add('active');
-      // do NOT pause — let the video keep playing under the fade
+      try { video.pause(); } catch (e) {}
     }
-    // Start the slow crossfade well before video ends so it keeps playing during the fade
+    // Start the slow crossfade slightly before the video ends
     video.addEventListener('timeupdate', () => {
       if (!menuStage.classList.contains('active') &&
-          video.duration && video.currentTime >= video.duration - 1.2) {
+          video.duration && video.currentTime >= video.duration - 0.3) {
         showMenu();
       }
     });
